@@ -5,6 +5,8 @@ import axios from 'axios';
 
 import signinImage from "../assets/signup.jpg";
 
+const cookies = new Cookies();
+
 const initialState = {
     fullName: '',
     username: '',
@@ -23,9 +25,34 @@ const Auth = () => {
     }
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(form);
+
+        // fetching all data user has filled in form 
+        const { fullName, username, password, phoneNumber, avatarURL } = form;
+
+        const URL = "http://localhost:5000/auth";
+
+        // Request to backend to get data like => token, userId, hashedPassword by passing form data 
+        const { data: { token, userId, hashedPassword } } = await axios.post(`${URL}/${isSignup ? 'signup' : 'login'}`, {
+            username, password, fullName, phoneNumber, avatarURL,
+        });
+        // storing the data we fetch from backend in cookies
+        cookies.set('token', token);
+        cookies.set('username', username);
+        cookies.set('fullName', fullName);
+        cookies.set('userId', userId);
+
+        // while creating account storing additional data to cookies
+        if (!isSignup) {
+            cookies.set('phoneNumber', phoneNumber);
+            cookies.set('avatarURL', avatarURL);
+            cookies.set('hashedPassword', hashedPassword);
+        }
+
+        // Reloading browser
+        // Why? => bcz when we will reload the application authToken will not be false and Chat window would be displayed 
+        window.location.reload();
     }
 
     const switchMode = () => {
