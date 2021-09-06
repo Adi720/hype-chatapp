@@ -29,13 +29,13 @@ const Auth = () => {
         e.preventDefault();
 
         // fetching all data user has filled in form 
-        const { fullName, username, password, phoneNumber, avatarURL } = form;
+        const { username, password, phoneNumber, avatarURL } = form;
 
         const URL = "http://localhost:5000/auth";
 
         // Request to backend to get data like => token, userId, hashedPassword by passing form data 
-        const { data: { token, userId, hashedPassword } } = await axios.post(`${URL}/${isSignup ? 'signup' : 'login'}`, {
-            username, password, fullName, phoneNumber, avatarURL,
+        const { data: { token, userId, hashedPassword, fullName } } = await axios.post(`${URL}/${isSignup ? 'signup' : 'login'}`, {
+            username, password, fullName: form.fullName, phoneNumber, avatarURL,
         });
         // storing the data we fetch from backend in cookies
         cookies.set('token', token);
